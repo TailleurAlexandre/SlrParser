@@ -11,5 +11,10 @@ typedef struct follow_s {
 
 char	*get_follow(rules_t *, char *);
 char	*get_first(rules_t *, char *);
+char	*get_saved_follow(char *rule_name);
+char    *merge_strings(char *, char *);
+char    *get_saved_first(char *);
+void    print_follows();
+void    print_firsts();
 
 #endif

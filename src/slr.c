@@ -6,7 +6,11 @@
 #include "slr.h"
 #include "closure.h"
 
-static rules_t		*g_rules = NULL;
+rules_t		*g_rules = NULL;
+
+/*
+ * Augment of first rule
+ */
 
 static void		augment_rule(){
   rules_t		*augment;
@@ -41,13 +45,14 @@ static void		parse_rules(FILE *file_ptr){
     // getline of the line below the rule name
     // _pre_rule is letter before >
     // _rule is letters after >
-
+    line = NULL;
+    n = 0;
     lim = getline(&line, &n, file_ptr);
     line[lim] = 0;
     tail->_pre_rule = strtok_r(line, ">", &save_ptr);
     tail->_rule = strtok_r(NULL, "\n", &save_ptr);
     tail->_line = line;
-    //printf("%s %s\n", tail->_pre_rule, tail->_rule);
+    printf("%s", tail->_name);
     if (head != NULL){
       head->_next = tail;
       tail->_prev = head;
@@ -57,7 +62,6 @@ static void		parse_rules(FILE *file_ptr){
     n = 0;
   }
   while (head && head->_prev){
-    printf("%s\n", head->_rule);
     head = head->_prev;
   }
   g_rules = head;

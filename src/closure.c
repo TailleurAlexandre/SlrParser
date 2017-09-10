@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "closure.h"
+#include "parsing_table.h"
 
 static int	get_closure_elements(rules_t *rules,
 				     closure_element_t **closure_elems, int counter, int offset);
@@ -11,6 +12,28 @@ static int	verify_use_ofrule(closure_element_t *closure_elems,
 
 static int		state_nb = 1;
 static goto_states_t	*g_cursor;
+
+void        print_state(int nb){
+    goto_states_t *tmp = g_cursor;
+    while (tmp){
+        if (nb == tmp->_number){
+            int i;
+
+            for(i = 0; i < tmp->closure->size;++i){
+                int o;
+                for(o = 0; o < strlen(tmp->closure->elements[i].rule->_rule);++o){
+                    if (o == tmp->closure->elements[i]._parsing_counter)
+                    {
+                        printf(".%c", tmp->closure->elements[i].rule->_rule[o]);
+                    }
+                    else
+                        printf("%c", tmp->closure->elements[i].rule->_rule[o]);
+                }
+            }
+        }
+        tmp = tmp->_next;
+    }
+}
 
 static int	verify_use_of_rule2(closure_element_t *closure_elems,
 				    size_t size, rules_t *rule, int parsing_counter){
@@ -36,7 +59,9 @@ static int	find_existing_state_edge(goto_states_t **states, int size, char c){
   return -1;
 }
 
-
+/*
+ * get closure for states other than 0
+ */
 static int	get_closure_elements2(rules_t *rules,
 				     closure_element_t **closure_elems, int counter, int offset){
   rules_t	*tmp2,*tmp;
@@ -88,6 +113,10 @@ static goto_states_t	*find_existing_state(goto_states_t *state){
   return NULL;
 }
 
+/*
+ * Adds a state to the list returns the state
+ */
+
 static goto_states_t	*add_new_state(closure_element_t elem, goto_states_t *states_top,
 				      char c, rules_t *rules){
   goto_states_t		*state;
@@ -116,6 +145,9 @@ static goto_states_t	*add_new_state(closure_element_t elem, goto_states_t *state
   return state;
 }
 
+/*
+ * function to get all parsing states
+ */
 static void	get_parsing_states(rules_t *rules, goto_states_t *states_top){
   closure_element_t	*closure = states_top->closure->elements;
   int			size = states_top->closure->size;
@@ -185,7 +217,10 @@ static int	verify_use_ofrule(closure_element_t *closure_elems,
 }
 
 
-
+/*
+ * function for first closure C0
+ * returns the size of the array
+ */
 static int	get_closure_elements(rules_t *rules,
 				     closure_element_t **closure_elems, int counter, int offset){
   rules_t	*tmp2,*tmp;
@@ -210,6 +245,9 @@ static int	get_closure_elements(rules_t *rules,
   return counter;
 }
 
+/*
+ * Start of closure creation
+ */
 static closure_t	*closure_creation_init(rules_t *rules,
 					       rules_t *cursor){
   closure_t		*tmp = NULL;
